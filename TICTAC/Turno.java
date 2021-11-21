@@ -6,31 +6,26 @@ public class Turno
     {
         flag = true;
     }
-/*
-*   Ponemos syncronized porque el wait lo requiere, ya que es como 
-*   una puerta a la hora de que entren varios hilos, una vez hay uno
-*   parado usando el wait, el otro syncronized debe estar en el notify
-*   para saber cuando ha terminado.
-*   Coger se encargará de hacer la espera hasta que el otro hilo no haya
-*   terminado, asi el podrá imprimir su nombre
-*/
+    /*
+    * Cuando el hilo entre en coger, este esperará a que le avise el otro que ha terminado
+    * Con esto aseguramos que vayan secuencialmente
+    */
     public synchronized void coger() throws InterruptedException
     {
-        //Si el hilo que se ejecuta es true, pararemos ese hilo hasta que le 
-        //notifiquen, y se despierte. Se cambia la flag antes porque sino
-        //ambos se qeudarian esperando a que uno notificasen.
+        //si flag es tur, podrá pasar a esperar. Cambiamos la flag para que el siguiente hilo 
+        //no pueda entrar y vaya directamente a dejar para que notifique a este que esta esperando
         if (flag)
         {
             flag = !flag;
             wait();
         }
     }
-
+    /*
+    * Entra en el metodo dejar, despues de haber sacado por pantalla TIC o TAC. 
+    * Cambiamos de valor a flag, para que pueda entrar en coger y se repita el ciclo
+    */
     public synchronized void dejar()
     {
-        //Volvemos a ponerla a true, para que pueda entrar en la condicion de arriba
-        //y asi espere a el siguiente hilo o llamada de otro hilo y notificamos que 
-        //el que estaba esperando puede iniciar de nuevo su ejecucion
         flag = true;
         notify();
     }
